@@ -16,7 +16,7 @@
 
 package org.springframework.samples.portfolio.config;
 
-import javax.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.ServletRegistration.Dynamic;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 

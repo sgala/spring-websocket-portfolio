@@ -15,17 +15,22 @@
  */
 package org.springframework.samples.portfolio.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
-import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
+import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
+import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 
+import org.springframework.messaging.Message;
 import static org.springframework.messaging.simp.SimpMessageType.*;
 
 @Configuration
-public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+@EnableWebSocketSecurity
+public class WebSocketSecurityConfig {
 
-	@Override
-	protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
+	@Bean
+	AuthorizationManager<Message<?>> authorizationManager(MessageMatcherDelegatingAuthorizationManager.Builder messages) {
 		messages
 				.nullDestMatcher().authenticated()
 				.simpSubscribeDestMatchers("/user/queue/errors").permitAll()
@@ -33,12 +38,7 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
 				.simpDestMatchers("/app/**").hasRole("USER")
 				.simpTypeMatchers(SUBSCRIBE, MESSAGE).denyAll()
 				.anyMessage().denyAll();
-	}
-
-	@Override
-	protected boolean sameOriginDisabled() {
-		// While CSRF is disabled..
-		return true;
+		return messages.build();
 	}
 
 }

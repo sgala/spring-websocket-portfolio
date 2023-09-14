@@ -15,13 +15,20 @@
  */
 package org.springframework.samples.portfolio.config;
 
+import org.springframework.context.annotation.Bean;
+import jakarta.servlet.annotation.WebListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
 /**
@@ -30,43 +37,52 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
  */
 @EnableWebSecurity
 @Configuration
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Bean(name = "mvcHandlerMappingIntrospector")
+	public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
+		return new HandlerMappingIntrospector();
+	}
+
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-			.csrf().disable()  // Refactor login form
+			.csrf().disable();  // Refactor login form
+		http.headers().frameOptions().disable()
+				.httpStrictTransportSecurity().disable();
 
 			// See https://jira.springsource.org/browse/SPR-11496
-			.headers().addHeaderWriter(
+		http
+			.headers(headers -> headers.addHeaderWriter(
 				new XFrameOptionsHeaderWriter(
-						XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)).and()
+						XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)));
 
-			.formLogin()
-				.defaultSuccessUrl("/index.html")
-				.loginPage("/login.html")
-				.failureUrl("/login.html?error")
-				.permitAll()
-				.and()
-			.logout()
-				.logoutSuccessUrl("/login.html?logout")
-				.logoutUrl("/logout.html")
-				.permitAll()
-				.and()
-			.authorizeRequests()
-				.antMatchers("/static/**").permitAll()
-				.antMatchers("/webjars/**").permitAll()
-				.anyRequest().authenticated()
-				.and();
+		http
+			.authorizeHttpRequests(requests -> requests
+					.requestMatchers("/static/**").permitAll()
+					.requestMatchers("/webjars/**").permitAll()
+					.anyRequest().authenticated()
+				)
+				.formLogin(form -> form.loginPage("/login.html").permitAll() )
+				.logout( logout -> logout.permitAll() );
+		return http.build();
 	}
 
-
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+	@Bean
+	public InMemoryUserDetailsManager userDetailsService() {
 		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-		auth
-			.inMemoryAuthentication()
-				.withUser("fabrice").password(encoder.encode("fab123")).roles("USER").and()
-				.withUser("paulson").password(encoder.encode("bond")).roles("ADMIN","USER");
+
+		UserDetails user1 = User.withDefaultPasswordEncoder()
+				.username("fabrice")
+				.password("fab123")
+				.roles("USER")
+				.build();
+		UserDetails user2 = User.withDefaultPasswordEncoder()
+				.username("paulson")
+				.password("bond")
+				.roles("ADMIN","USER")
+				.build();
+		return new InMemoryUserDetailsManager(user1,user2);
 	}
+
 }

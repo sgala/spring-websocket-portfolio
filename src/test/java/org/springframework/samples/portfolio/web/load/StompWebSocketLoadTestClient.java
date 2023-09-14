@@ -33,6 +33,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.ConnectionLostException;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -78,7 +79,7 @@ public class StompWebSocketLoadTestClient {
 
 		String homeUrl = "http://{host}:{port}/home";
 		logger.debug("Sending warm-up HTTP request to " + homeUrl);
-		HttpStatus status = new RestTemplate().getForEntity(homeUrl, Void.class, host, port).getStatusCode();
+		HttpStatusCode status = new RestTemplate().getForEntity(homeUrl, Void.class, host, port).getStatusCode();
 		Assert.state(status == HttpStatus.OK);
 
 		final CountDownLatch connectLatch = new CountDownLatch(NUMBER_OF_USERS);

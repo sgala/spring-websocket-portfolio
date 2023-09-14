@@ -49,7 +49,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.JsonPathExpectationsHelper;
-import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
@@ -174,7 +174,7 @@ public class ContextPortfolioControllerTests {
 			excludeFilters = @ComponentScan.Filter(type= FilterType.ANNOTATION, value = Configuration.class)
 	)
 	@EnableWebSocketMessageBroker
-	static class TestWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
+	static class TestWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 		@Autowired
 		Environment env;

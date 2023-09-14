@@ -252,11 +252,6 @@ public class StompBrokerRelayLoadApp {
 
 
 		@Override
-		protected SimpUserRegistry createLocalUserRegistry() {
-			return new DefaultSimpUserRegistry();
-		}
-
-		@Override
 		protected SimpUserRegistry createLocalUserRegistry(Integer order) {
 			DefaultSimpUserRegistry registry = new DefaultSimpUserRegistry();
 			if (order != null) {

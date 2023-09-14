@@ -19,7 +19,7 @@ package org.springframework.samples.portfolio.web.context;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptorAdapter;
+import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A ChannelInterceptor that caches messages.
  */
-public class TestChannelInterceptor extends ChannelInterceptorAdapter {
+public class TestChannelInterceptor implements ChannelInterceptor {
 
 	private final BlockingQueue<Message<?>> messages = new ArrayBlockingQueue<>(100);
 

@@ -54,9 +54,9 @@ import org.springframework.samples.portfolio.service.Trade;
 import org.springframework.samples.portfolio.web.support.TomcatWebSocketTestServer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.util.JsonPathExpectationsHelper;
+import org.springframework.test.util.TestSocketUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -115,9 +115,10 @@ public class IntegrationPortfolioTests {
 
 		System.setProperty("spring.profiles.active", "test.tomcat");
 
-		port = SocketUtils.findAvailableTcpPort();
+		port = TestSocketUtils.findAvailableTcpPort();
 
 		server = new TomcatWebSocketTestServer(port);
+
 		server.deployWithInitializer(TestDispatcherServletInitializer.class, WebSecurityInitializer.class);
 		server.start();
 

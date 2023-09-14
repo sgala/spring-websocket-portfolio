@@ -44,7 +44,7 @@ import org.springframework.samples.portfolio.web.support.WebSocketTestServer;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -83,7 +83,7 @@ public class StompWebSocketLoadTestServer {
 			AnnotationConfigWebApplicationContext cxt = new AnnotationConfigWebApplicationContext();
 			cxt.register(WebSocketConfig.class);
 
-			int port = SocketUtils.findAvailableTcpPort();
+			int port = TestSocketUtils.findAvailableTcpPort();
 			if (USE_JETTY) {
 				server = new JettyWebSocketTestServer(port);
 			}
